@@ -20,7 +20,7 @@ The main goal of `bert.cpp` is to run the BERT model using 4-bit integer quantiz
     * All outputs are mean pooled and normalized
 * Batching support is WIP. Lack of real batching means that this library is slower than it could be in usecases where you have multiple sentences
 
-## Usage
+## Usage    
 
 ### Checkout the ggml submodule
 ```sh
@@ -32,6 +32,8 @@ pip3 install -r requirements.txt
 # python3 models/download-ggml.py list_models
 python3 models/download-ggml.py download all-MiniLM-L6-v2 q4_0
 ```
+
+## On PC
 ### Build
 To build the dynamic library for usage from e.g. Python:
 ```sh
@@ -50,6 +52,21 @@ cmake .. -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release
 make
 cd ..
 ```
+
+## To build for Termux
+
+Download the android NDK [link](https://developer.android.com/ndk/downloads)  
+Configure cmake to build for android and build like the linux version   
+
+```sh
+mkdir build  
+cd build  
+cmake -DCMAKE_TOOLCHAIN_FILE=path/to/ndk/build/cmake/android.toolchain.cmake -DANDROID_ABI=arm64-v8a -DANDROID_NATIVE_API_LEVEL=android-21 ..  
+cmake .. -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release  
+make  
+cd ..  
+```
+
 ### Run the python dynamic library example
 ```sh
 python3 examples/sample_dylib.py models/all-MiniLM-L6-v2/ggml-model-f16.bin
@@ -84,6 +101,26 @@ python3 examples/sample_dylib.py models/all-MiniLM-L6-v2/ggml-model-f16.bin
 #  (similarity score: 0.2709)
 # 3. " I 've stopped looters , run political parties out of abandoned buildings , caught people with large amounts of cash and weapons , " Williams said .
 #  (similarity score: 0.2672)
+```
+
+### Running dynamic library example on termux
+```sh
+# Copy the following files to termux
+# 1. examples/sample_dylib_termux.py
+# 2. build/libbert.so
+# 3. ggml/src/libggml.so
+# 4. models/<bert_model>
+# 5. examples/sample_client_texts.txt
+# Make sure 1, 2, 3 are in the home folder of termux so that they are executable.  
+# Edit 1 depending on the path of 5
+
+# From the home folder run
+python3 examples/sample_dylib.py /path/to/model
+
+# output should be similar to the PC version.
+
+# Note: You need to install python pkg on termux for this to work
+
 ```
 
 ### Start sample server
